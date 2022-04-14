@@ -1,5 +1,7 @@
 # Copyright 2021 MosaicML. All Rights Reserved.
 
+"""ChannelsLast algorithm."""
+
 from __future__ import annotations
 
 import logging
@@ -11,22 +13,41 @@ from composer.core.types import Algorithm, Event, Logger, State
 
 log = logging.getLogger(__name__)
 
+__all__ = ['ChannelsLast', 'apply_channels_last']
+
 
 def apply_channels_last(model: torch.nn.Module) -> None:
-    """Changes the memory format of the model to torch.channels_last.
+    """Changes the memory format of the model to `torch.channels_last <https://\\
+    pytorch.org/tutorials/intermediate/memory_format_tutorial.html>`_.
 
     This usually yields improved GPU utilization.
 
     Args:
         model: model or module to modify
     """
+
     model.to(memory_format=torch.channels_last)  # type: ignore
 
 
 class ChannelsLast(Algorithm):
-    """Changes the memory format of the model to ``torch.channels_last``. This usually yields improved GPU utilization.
+    """Changes the memory format of the model to `torch.channels_last <https://\\
+    pytorch.org/tutorials/intermediate/memory_format_tutorial.html>`_. This usually improves GPU utilization.
 
     Runs on ``Event.INIT``, so it can set the memory format before the model is DDP wrapped. Has no hyperparameters.
+
+    Example:
+        .. testcode::
+
+            from composer.algorithms import ChannelsLast
+            algorithm = ChannelsLast()
+            trainer = Trainer(
+                model=model,
+                train_dataloader=train_dataloader,
+                eval_dataloader=eval_dataloader,
+                max_duration="1ep",
+                algorithms=[algorithm],
+                optimizers=[optimizer]
+            )
     """
 
     def match(self, event: Event, state: State) -> bool:
