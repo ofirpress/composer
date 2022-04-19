@@ -7,6 +7,7 @@ from typing import List, Optional
 
 import pytest
 import torch
+from torch import distributed as dist
 
 import composer
 from composer.utils import dist, reproducibility
@@ -159,3 +160,11 @@ def chdir_to_tmpdir(tmpdir: pathlib.Path):
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int):
     if exitstatus == 5:
         session.exitstatus = 0  # Ignore no-test-ran errors
+
+
+@pytest.fixture(scope="function", autouse=True)
+def destroy_process_group():
+    """Teardown any existing process groups between tests."""
+    yield
+    if dist.is_available() and dist.is_initialized():
+        dist.destroy_process_group()
