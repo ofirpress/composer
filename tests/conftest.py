@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import pytest
 import torch
-from torch import distributed as dist
+from torch import distributed
 
 import composer
 from composer.utils import dist, reproducibility
@@ -166,5 +166,5 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int):
 def destroy_process_group():
     """Teardown any existing process groups between tests."""
     yield
-    if dist.is_available() and dist.is_initialized():
-        dist.destroy_process_group()
+    if distributed.is_available() and distributed.is_initialized():
+        distributed.destroy_process_group()
