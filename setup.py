@@ -154,7 +154,7 @@ extra_deps["webdataset"] = [
 ]
 
 extra_deps["streaming"] = [
-    "boto3==1.21.40",
+    "boto3>=1.21.45",
 ]
 
 extra_deps["all"] = set(dep for deps in extra_deps.values() for dep in deps)
